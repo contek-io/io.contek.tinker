@@ -1,9 +1,7 @@
-group 'io.contek.reloading'
-version '0.0.2'
-
-apply plugin: 'java'
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
+plugins {
+    id 'java'
+    id 'signing'
+}
 
 sourceCompatibility = '1.11'
 targetCompatibility = '1.11'
@@ -16,132 +14,69 @@ dependencies {
     implementation 'com.google.guava:guava:29.0-jre'
     implementation "org.yaml:snakeyaml:1.25"
 
-    compileOnly 'javax.annotation:jsr250-api:1.0'
-    compileOnly 'com.github.spotbugs:spotbugs-annotations:4.0.0-beta3'
-}
-
-task sourceJar(type: Jar) {
-    classifier "sources"
-    from sourceSets.main.allJava
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier "javadoc"
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives jar
-    archives sourceJar
-    archives javadocJar
+    compileOnly 'com.github.spotbugs:spotbugs-annotations:4.1.2'
 }
 
 signing {
     sign configurations.archives
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            customizePom(pom)
-            groupId 'io.contek.reloading'
-            artifactId 'reloading'
-            version '0.0.2'
+apply plugin: 'maven'
 
-            from components.java
+task javadocJar(type: Jar) {
+    archiveClassifier.set("javadoc")
+    from javadoc
+}
+task sourcesJar(type: Jar) {
+    archiveClassifier.set("sources")
+    from sourceSets.main.allSource
+}
+artifacts {
+    archives javadocJar, sourcesJar
+}
 
-            // create the sign pom artifact
-            pom.withXml {
-                def pomFile = file("${project.buildDir}/generated-pom.xml")
-                writeTo(pomFile)
-                def pomAscFile = signing.sign(pomFile).signatureFiles[0]
-                artifact(pomAscFile) {
-                    classifier = null
-                    extension = 'pom.asc'
-                }
-            }
+group = "io.contek.reloading"
+archivesBaseName = "reloading"
+version = "0.0.2"
 
-            artifact(sourceJar) {
-                classifier = 'sources'
-            }
-            artifact(javadocJar) {
-                classifier = 'javadoc'
-            }
-
-            // create the signed artifacts
-            project.tasks.signArchives.signatureFiles.each {
-                artifact(it) {
-                    def matcher = it.file =~ /-(sources|javadoc)\.jar\.asc$/
-                    if (matcher.find()) {
-                        classifier = matcher.group(1)
-                    } else {
-                        classifier = null
-                    }
-                    extension = 'jar.asc'
-                }
-            }
-        }
-    }
+uploadArchives {
     repositories {
-        maven {
-            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-            credentials {
-                username ossrhUsername
-                password ossrhPassword
-            }
-        }
-    }
-}
+        mavenDeployer {
 
-def customizePom(pom) {
-    pom.withXml {
-        def root = asNode()
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-        root.dependencies.removeAll { dep ->
-            dep.scope == "test"
-        }
-
-        root.children().last() + {
-            resolveStrategy = DELEGATE_FIRST
-
-            name 'Reloading Store'
-            description 'Templates to create store that reloads periodically.'
-            url 'https://github.com/contek-io/io.contek.reloading'
-
-            scm {
-                connection 'scm:git:git://github.com/contek-io/io.contek.reloading.git'
-                developerConnection 'scm:git:ssh://github.com/contek-io/io.contek.reloading.git'
-                url 'http://github.com/contek-io/io.contek.reloading/tree/master'
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
             }
 
-            licenses {
-                license {
-                    name 'The Apache License, Version 2.0'
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+            pom.project {
+                name 'Reloading Store'
+                description 'Templates to create store that reloads periodically.'
+                url 'https://github.com/contek-io/io.contek.reloading'
+
+                scm {
+                    connection 'scm:git:git://github.com/contek-io/io.contek.reloading.git'
+                    developerConnection 'scm:git:ssh://github.com/contek-io/io.contek.reloading.git'
+                    url 'http://github.com/contek-io/io.contek.reloading/tree/master'
                 }
-            }
 
-            developers {
-                developer {
-                    id 'contek'
-                    name 'Dev Contek'
-                    email 'dev@contek.io'
-                    organization 'Contek'
-                    organizationUrl 'https://contek.io'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'contek'
+                        name = 'Dev Contek'
+                        email = 'dev@contek.io'
+                        organization = 'Contek'
+                        organizationUrl = 'https://contek.io'
+                    }
                 }
             }
         }
-    }
-}
-
-model {
-    tasks.generatePomFileForMavenJavaPublication {
-        destination = file("$buildDir/generated-pom.xml")
-    }
-    tasks.publishMavenJavaPublicationToMavenLocal {
-        dependsOn project.tasks.signArchives
-    }
-    tasks.publishMavenJavaPublicationToMavenRepository {
-        dependsOn project.tasks.signArchives
     }
 }
