@@ -1,5 +1,5 @@
 group 'io.contek.reloading'
-version '0.0.1'
+version '0.0.2'
 
 apply plugin: 'java'
 apply plugin: 'maven-publish'
@@ -46,7 +46,7 @@ publishing {
             customizePom(pom)
             groupId 'io.contek.reloading'
             artifactId 'reloading'
-            version '0.0.1'
+            version '0.0.2'
 
             from components.java
 
