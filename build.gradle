@@ -1,0 +1,91 @@
+plugins {
+    id 'idea'
+    id 'java'
+    id 'signing'
+}
+
+sourceCompatibility = '1.11'
+targetCompatibility = '1.11'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    implementation 'com.google.guava:guava:29.0-jre'
+    implementation "org.yaml:snakeyaml:1.25"
+
+    compileOnly 'javax.annotation:jsr250-api:1.0'
+    compileOnly 'com.github.spotbugs:spotbugs-annotations:4.0.0-beta3'
+}
+
+signing {
+    sign configurations.archives
+}
+
+apply plugin: 'maven'
+
+task javadocJar(type: Jar) {
+    archiveClassifier.set("javadoc")
+    from javadoc
+}
+task sourcesJar(type: Jar) {
+    archiveClassifier.set("sources")
+    from sourceSets.main.allSource
+}
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+group = "io.contek.reloading"
+archivesBaseName = "reloading"
+version = "0.0.1"
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+
+            // Sign POM
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            // Destination
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            // Add required metadata to POM
+            pom.project {
+                name = 'Reloading Store'
+                packaging = 'jar'
+                description = 'Templates to create store that reloads periodically.'
+                url = 'https://github.com/contek-io/reloading'
+
+                scm {
+                    connection = 'scm:git:git://github.com/contek-io/reloading.git'
+                    developerConnection = 'scm:git:ssh://github.com/contek-io/reloading.git'
+                    url = 'http://github.com/contek-io/reloading/tree/master'
+                }
+
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'contek'
+                        name = 'Dev Contek'
+                        email = 'dev@contek.io'
+                        organization = 'Contek'
+                        organizationUrl = 'https://contek.io'
+                    }
+                }
+            }
+        }
+    }
+}
