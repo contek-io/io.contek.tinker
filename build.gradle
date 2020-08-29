@@ -1,7 +1,7 @@
 plugins {
-    apply plugin: 'java'
-    apply plugin: 'maven-publish'
-    apply plugin: 'signing'
+    id 'java'
+    id 'maven-publish'
+    id 'signing'
 }
 
 sourceCompatibility = '1.11'
@@ -103,31 +103,30 @@ def customizePom(pom) {
         root.children().last() + {
             resolveStrategy = DELEGATE_FIRST
 
-            name = 'Reloading Store'
-            packaging = 'jar'
-            description = 'Templates to create store that reloads periodically.'
-            url = 'https://github.com/contek-io/io.contek.reloading'
+            name 'Reloading Store'
+            description 'Templates to create store that reloads periodically.'
+            url 'https://github.com/contek-io/io.contek.reloading'
 
             scm {
-                connection = 'scm:git:git://github.com/contek-io/io.contek.reloading.git'
-                developerConnection = 'scm:git:ssh://github.com/contek-io/io.contek.reloading.git'
-                url = 'http://github.com/contek-io/io.contek.reloading/tree/master'
+                connection 'scm:git:git://github.com/contek-io/io.contek.reloading.git'
+                developerConnection 'scm:git:ssh://github.com/contek-io/io.contek.reloading.git'
+                url 'http://github.com/contek-io/io.contek.reloading/tree/master'
             }
 
             licenses {
                 license {
-                    name = 'The Apache License, Version 2.0'
-                    url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    name 'The Apache License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
                 }
             }
 
             developers {
                 developer {
-                    id = 'contek'
-                    name = 'Dev Contek'
-                    email = 'dev@contek.io'
-                    organization = 'Contek'
-                    organizationUrl = 'https://contek.io'
+                    id 'contek'
+                    name 'Dev Contek'
+                    email 'dev@contek.io'
+                    organization 'Contek'
+                    organizationUrl 'https://contek.io'
                 }
             }
         }
