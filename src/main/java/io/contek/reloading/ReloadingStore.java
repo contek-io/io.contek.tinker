@@ -90,7 +90,8 @@ public abstract class ReloadingStore<Config, Item> {
             try {
               newModifiedTime = getLastModifiedTime(configPath).toInstant();
             } catch (IOException e) {
-              throw new RuntimeException("Could not get modified time: " + configPath, e);
+              onError(e);
+              return oldModifiedTime;
             }
 
             if (oldModifiedTime != null && !newModifiedTime.isAfter(oldModifiedTime)) {
@@ -100,6 +101,7 @@ public abstract class ReloadingStore<Config, Item> {
             synchronized (itemHolder) {
               Item oldItem = itemHolder.get();
               Item newItem;
+              AtomicReference<IOException> errorHolder = new AtomicReference<>(null);
               try {
                 newItem = itemHolder.updateAndGet(
                     oldValue -> {
@@ -107,10 +109,15 @@ public abstract class ReloadingStore<Config, Item> {
                       try (InputStream stream = Files.newInputStream(configPath)) {
                         config = new Yaml().loadAs(stream, configType);
                       } catch (IOException e) {
-                        throw new RuntimeException("Could not load config: " + configPath, e);
+                        errorHolder.set(e);
+                        return oldValue;
                       }
                       return read(config);
                     });
+                if (errorHolder.get() != null) {
+                  onError(errorHolder.get());
+                  return oldModifiedTime;
+                }
               } catch (Throwable t) {
                 onError(t);
                 return oldModifiedTime;
