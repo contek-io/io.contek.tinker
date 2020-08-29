@@ -1,6 +1,5 @@
 plugins {
-    id 'idea'
-    id 'java'
+    id 'java-library'
     id 'signing'
 }
 
@@ -61,12 +60,12 @@ uploadArchives {
                 name = 'Reloading Store'
                 packaging = 'jar'
                 description = 'Templates to create store that reloads periodically.'
-                url = 'https://github.com/contek-io/reloading'
+                url = 'https://github.com/contek-io/io.contek.reloading'
 
                 scm {
-                    connection = 'scm:git:git://github.com/contek-io/reloading.git'
-                    developerConnection = 'scm:git:ssh://github.com/contek-io/reloading.git'
-                    url = 'http://github.com/contek-io/reloading/tree/master'
+                    connection = 'scm:git:git://github.com/contek-io/io.contek.reloading.git'
+                    developerConnection = 'scm:git:ssh://github.com/contek-io/io.contek.reloading.git'
+                    url = 'http://github.com/contek-io/io.contek.reloading/tree/master'
                 }
 
                 licenses {
