@@ -1,13 +1,14 @@
 plugins {
-    id 'java-library'
-    id 'signing'
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
 }
 
 sourceCompatibility = '1.11'
 targetCompatibility = '1.11'
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
@@ -18,73 +19,129 @@ dependencies {
     compileOnly 'com.github.spotbugs:spotbugs-annotations:4.0.0-beta3'
 }
 
+task sourceJar(type: Jar) {
+    classifier "sources"
+    from sourceSets.main.allJava
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier "javadoc"
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives jar
+    archives sourceJar
+    archives javadocJar
+}
+
 signing {
     sign configurations.archives
 }
 
-apply plugin: 'maven'
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            customizePom(pom)
+            groupId 'io.contek.reloading'
+            artifactId 'reloading'
+            version '0.0.1'
 
-task javadocJar(type: Jar) {
-    archiveClassifier.set("javadoc")
-    from javadoc
-}
-task sourcesJar(type: Jar) {
-    archiveClassifier.set("sources")
-    from sourceSets.main.allSource
-}
-artifacts {
-    archives javadocJar, sourcesJar
-}
+            from components.java
 
-group = "io.contek.reloading"
-archivesBaseName = "reloading"
-version = "0.0.1"
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-
-            // Sign POM
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            // Destination
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
+            // create the sign pom artifact
+            pom.withXml {
+                def pomFile = file("${project.buildDir}/generated-pom.xml")
+                writeTo(pomFile)
+                def pomAscFile = signing.sign(pomFile).signatureFiles[0]
+                artifact(pomAscFile) {
+                    classifier = null
+                    extension = 'pom.asc'
+                }
             }
 
-            // Add required metadata to POM
-            pom.project {
-                name = 'Reloading Store'
-                packaging = 'jar'
-                description = 'Templates to create store that reloads periodically.'
-                url = 'https://github.com/contek-io/io.contek.reloading'
+            artifact(sourceJar) {
+                classifier = 'sources'
+            }
+            artifact(javadocJar) {
+                classifier = 'javadoc'
+            }
 
-                scm {
-                    connection = 'scm:git:git://github.com/contek-io/io.contek.reloading.git'
-                    developerConnection = 'scm:git:ssh://github.com/contek-io/io.contek.reloading.git'
-                    url = 'http://github.com/contek-io/io.contek.reloading/tree/master'
-                }
-
-                licenses {
-                    license {
-                        name = 'The Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+            // create the signed artifacts
+            project.tasks.signArchives.signatureFiles.each {
+                artifact(it) {
+                    def matcher = it.file =~ /-(sources|javadoc)\.jar\.asc$/
+                    if (matcher.find()) {
+                        classifier = matcher.group(1)
+                    } else {
+                        classifier = null
                     }
-                }
-
-                developers {
-                    developer {
-                        id = 'contek'
-                        name = 'Dev Contek'
-                        email = 'dev@contek.io'
-                        organization = 'Contek'
-                        organizationUrl = 'https://contek.io'
-                    }
+                    extension = 'jar.asc'
                 }
             }
         }
+    }
+    repositories {
+        maven {
+            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            credentials {
+                username ossrhUsername
+                password ossrhPassword
+            }
+        }
+    }
+}
+
+def customizePom(pom) {
+    pom.withXml {
+        def root = asNode()
+
+        root.dependencies.removeAll { dep ->
+            dep.scope == "test"
+        }
+
+        root.children().last() + {
+            resolveStrategy = DELEGATE_FIRST
+
+            name = 'Reloading Store'
+            packaging = 'jar'
+            description = 'Templates to create store that reloads periodically.'
+            url = 'https://github.com/contek-io/io.contek.reloading'
+
+            scm {
+                connection = 'scm:git:git://github.com/contek-io/io.contek.reloading.git'
+                developerConnection = 'scm:git:ssh://github.com/contek-io/io.contek.reloading.git'
+                url = 'http://github.com/contek-io/io.contek.reloading/tree/master'
+            }
+
+            licenses {
+                license {
+                    name = 'The Apache License, Version 2.0'
+                    url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                }
+            }
+
+            developers {
+                developer {
+                    id = 'contek'
+                    name = 'Dev Contek'
+                    email = 'dev@contek.io'
+                    organization = 'Contek'
+                    organizationUrl = 'https://contek.io'
+                }
+            }
+        }
+    }
+}
+
+model {
+    tasks.generatePomFileForMavenJavaPublication {
+        destination = file("$buildDir/generated-pom.xml")
+    }
+    tasks.publishMavenJavaPublicationToMavenLocal {
+        dependsOn project.tasks.signArchives
+    }
+    tasks.publishMavenJavaPublicationToMavenRepository {
+        dependsOn project.tasks.signArchives
     }
 }
