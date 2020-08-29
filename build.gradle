@@ -7,7 +7,7 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 repositories {
-    mavenCentral()
+    jcenter()
 }
 
 dependencies {
@@ -37,7 +37,7 @@ artifacts {
 
 group = "io.contek.reloading"
 archivesBaseName = "reloading"
-version = "0.0.2"
+version = "0.0.3"
 
 uploadArchives {
     repositories {

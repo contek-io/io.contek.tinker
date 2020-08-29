@@ -68,6 +68,11 @@ public abstract class ReloadingStore<Config, Item> {
 
   @Nullable
   public final Item getItem() {
+    synchronized (started) {
+      if (!started.get()) {
+        throw new IllegalStateException();
+      }
+    }
     synchronized (itemHolder) {
       return itemHolder.get();
     }
