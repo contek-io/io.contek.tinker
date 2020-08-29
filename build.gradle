@@ -1,8 +1,9 @@
-plugins {
-    id 'java'
-    id 'maven-publish'
-    id 'signing'
-}
+group 'io.contek.reloading'
+version '0.0.1'
+
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
 sourceCompatibility = '1.11'
 targetCompatibility = '1.11'
