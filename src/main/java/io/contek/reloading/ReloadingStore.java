@@ -78,7 +78,7 @@ public abstract class ReloadingStore<Config, Item> {
     }
   }
 
-  protected abstract Item read(Config config);
+  protected abstract Item read(@Nullable Config config);
 
   protected abstract void onError(Throwable t);
 
