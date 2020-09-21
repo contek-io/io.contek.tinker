@@ -37,7 +37,7 @@ artifacts {
 
 group = "io.contek.reloading"
 archivesBaseName = "reloading"
-version = "0.0.4"
+version = "0.0.5"
 
 uploadArchives {
     repositories {
