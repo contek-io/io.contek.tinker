@@ -78,7 +78,7 @@ public abstract class ReloadingStore<Config, Item> {
     }
   }
 
-  protected abstract Item read(@Nullable Config config);
+  protected abstract Item read(Path path, @Nullable Config config);
 
   protected abstract void onError(Throwable t);
 
@@ -117,7 +117,7 @@ public abstract class ReloadingStore<Config, Item> {
                         errorHolder.set(e);
                         return oldValue;
                       }
-                      return read(config);
+                      return read(configPath, config);
                     });
                 if (errorHolder.get() != null) {
                   onError(errorHolder.get());
