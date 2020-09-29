@@ -1,14 +1,15 @@
-package io.contek.reloading;
+package io.contek.tinker.rearm;
 
 import com.google.common.collect.ImmutableSet;
-import java.nio.file.Path;
+
 import javax.annotation.concurrent.ThreadSafe;
+import java.nio.file.Path;
 
 @ThreadSafe
-public abstract class ReloadingSetStore<Config, Value>
-    extends ReloadingStore<Config, ImmutableSet<Value>> {
+public abstract class RearmSetStore<Config, Value>
+    extends RearmStore<Config, ImmutableSet<Value>> {
 
-  protected ReloadingSetStore(Path configPath, Class<Config> configType) {
+  protected RearmSetStore(Path configPath, Class<Config> configType) {
     super(configPath, configType);
   }
 

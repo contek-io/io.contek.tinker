@@ -1,15 +1,16 @@
-package io.contek.reloading;
+package io.contek.tinker.rearm;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMultimap;
-import java.nio.file.Path;
+
 import javax.annotation.concurrent.ThreadSafe;
+import java.nio.file.Path;
 
 @ThreadSafe
-public abstract class ReloadingMultimapStore<Config, Key, Value>
-    extends ReloadingStore<Config, ImmutableMultimap<Key, Value>> {
+public abstract class RearmMultimapStore<Config, Key, Value>
+    extends RearmStore<Config, ImmutableMultimap<Key, Value>> {
 
-  protected ReloadingMultimapStore(Path configPath, Class<Config> configType) {
+  protected RearmMultimapStore(Path configPath, Class<Config> configType) {
     super(configPath, configType);
   }
 

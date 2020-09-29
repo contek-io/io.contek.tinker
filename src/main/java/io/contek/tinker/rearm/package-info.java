@@ -1,6 +1,7 @@
 @ParametersAreNonnullByDefault
 @ReturnValuesAreNonnullByDefault
-package io.contek.reloading;
+package io.contek.tinker.rearm;
 
 import edu.umd.cs.findbugs.annotations.ReturnValuesAreNonnullByDefault;
+
 import javax.annotation.ParametersAreNonnullByDefault;
