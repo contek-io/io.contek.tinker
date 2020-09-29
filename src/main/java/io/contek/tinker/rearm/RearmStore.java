@@ -39,7 +39,7 @@ public abstract class RearmStore<Config, Item> {
 
   private Duration initialDelay = Duration.ZERO;
   private Duration delay = Duration.ofSeconds(10);
-  private final List<IRearmListener<? super Item>> listeners = new LinkedList<>();
+  private final List<IListener<? super Item>> listeners = new LinkedList<>();
 
   protected RearmStore(Path configPath, Class<Config> configType) {
     this.configPath = configPath;
@@ -92,8 +92,10 @@ public abstract class RearmStore<Config, Item> {
     return this;
   }
 
-  /** Adds the given listener to {@link #listeners}. */
-  public RearmStore<Config, Item> addListener(IRearmListener<? super Item> listener) {
+  /**
+   * Adds the given listener to {@link #listeners}.
+   */
+  public RearmStore<Config, Item> addListener(IListener<? super Item> listener) {
     synchronized (listeners) {
       listeners.add(listener);
       Collections.sort(listeners);
@@ -101,8 +103,10 @@ public abstract class RearmStore<Config, Item> {
     return this;
   }
 
-  /** Removes the given listener from {@link #listeners}. */
-  public RearmStore<Config, Item> removeListener(IRearmListener<? super Item> listener) {
+  /**
+   * Removes the given listener from {@link #listeners}.
+   */
+  public RearmStore<Config, Item> removeListener(IListener<? super Item> listener) {
     synchronized (listeners) {
       listeners.remove(listener);
     }
@@ -228,6 +232,45 @@ public abstract class RearmStore<Config, Item> {
   private void onRearm(Item newValue, @Nullable Item oldValue, Instant modifiedTime) {
     synchronized (listeners) {
       listeners.forEach(l -> l.onRearm(configPath, newValue, oldValue, modifiedTime));
+    }
+  }
+
+  /**
+   * Listener which gets called when {@link RearmStore} has update.
+   */
+  @ThreadSafe
+  public interface IListener<Item> extends Comparable<IListener<?>> {
+
+    /**
+     * Called when an error occurs.
+     *
+     * @param t the error.
+     */
+    void onError(Throwable t);
+
+    /**
+     * Called when the stored value has changed.
+     *
+     * @param path         the path of the yaml file.
+     * @param newValue     the new value.
+     * @param oldValue     the old value.
+     * @param modifiedTime the modified time of the yaml file.
+     */
+    void onRearm(Path path, Item newValue, @Nullable Item oldValue, Instant modifiedTime);
+
+    /**
+     * The priority of this listener. A listener with lower value returned from this method will get
+     * called earlier.
+     *
+     * @return the score that reflects the priority of this listener.
+     */
+    default int getPriority() {
+      return 0;
+    }
+
+    @Override
+    default int compareTo(IListener<?> that) {
+      return Integer.compare(this.getPriority(), that.getPriority());
     }
   }
 }

@@ -23,4 +23,11 @@ public abstract class RearmMultimapStore<Config, Key, Value>
     ImmutableMultimap<Key, Value> item = getItem();
     return item == null ? ImmutableMultimap.of() : item;
   }
+
+  /**
+   * Listener which gets called when {@link RearmMultimapStore} has update.
+   */
+  @ThreadSafe
+  public interface IListener<Key, Value> extends RearmStore.IListener<ImmutableMultimap<Key, Value>> {
+  }
 }

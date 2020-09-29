@@ -29,7 +29,6 @@ public abstract class RearmListStore<Config, Value>
     return value;
   }
 
-
   @Nullable
   public final Value getNullable(int index) {
     List<Value> list = getList();
@@ -39,5 +38,12 @@ public abstract class RearmListStore<Config, Value>
   public final ImmutableList<Value> getList() {
     ImmutableList<Value> item = getItem();
     return item == null ? ImmutableList.of() : item;
+  }
+
+  /**
+   * Listener which gets called when {@link RearmListStore} has update.
+   */
+  @ThreadSafe
+  public interface IListener<Value> extends RearmStore.IListener<ImmutableList<Value>> {
   }
 }

@@ -39,4 +39,11 @@ public abstract class RearmMapStore<Config, Key, Value>
     ImmutableMap<Key, Value> item = getItem();
     return item == null ? ImmutableMap.of() : item;
   }
+
+  /**
+   * Listener which gets called when {@link RearmMapStore} has update.
+   */
+  @ThreadSafe
+  public interface IListener<Key, Value> extends RearmStore.IListener<ImmutableMap<Key, Value>> {
+  }
 }

@@ -17,4 +17,11 @@ public abstract class RearmSetStore<Config, Value>
     ImmutableSet<Value> item = getItem();
     return item == null ? ImmutableSet.of() : item;
   }
+
+  /**
+   * Listener which gets called when {@link RearmSetStore} has update.
+   */
+  @ThreadSafe
+  public interface IListener<Value> extends RearmStore.IListener<ImmutableSet<Value>> {
+  }
 }

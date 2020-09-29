@@ -38,4 +38,11 @@ public abstract class RearmBiMapStore<Config, Key, Value>
     ImmutableBiMap<Key, Value> item = getItem();
     return item == null ? ImmutableBiMap.of() : item;
   }
+
+  /**
+   * Listener which gets called when {@link RearmBiMapStore} has update.
+   */
+  @ThreadSafe
+  public interface IListener<Key, Value> extends RearmStore.IListener<ImmutableBiMap<Key, Value>> {
+  }
 }
