@@ -10,11 +10,10 @@ import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
 @ThreadSafe
-public abstract class RearmListStore<Config, Value>
-    extends RearmStore<Config, ImmutableList<Value>> {
+public abstract class RearmListStore<Value> extends RearmStore<ImmutableList<Value>> {
 
-  protected RearmListStore(Path configPath, Class<Config> configType) {
-    super(configPath, configType);
+  protected RearmListStore(Path configPath, IParser<Value> parser) {
+    super(configPath, parser);
   }
 
   public final Value get(int index) throws NoSuchElementException {
@@ -40,10 +39,11 @@ public abstract class RearmListStore<Config, Value>
     return item == null ? ImmutableList.of() : item;
   }
 
-  /**
-   * Listener which gets called when {@link RearmListStore} has update.
-   */
+  /** Parser to read and parse {@link ImmutableList} from a file. */
   @ThreadSafe
-  public interface IListener<Value> extends RearmStore.IListener<ImmutableList<Value>> {
-  }
+  public interface IParser<Value> extends RearmStore.IParser<ImmutableList<Value>> {}
+
+  /** Listener which gets called when {@link RearmListStore} has update. */
+  @ThreadSafe
+  public interface IListener<Value> extends RearmStore.IListener<ImmutableList<Value>> {}
 }

@@ -1,0 +1,7 @@
+dependencies {
+    implementation project(':rearm-core')
+
+    implementation 'org.yaml:snakeyaml:1.27'
+}
+
+description = "Tinker Rearm Yaml"

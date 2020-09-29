@@ -1,13 +1,10 @@
 package io.contek.tinker.rearm;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import org.yaml.snakeyaml.Yaml;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
@@ -24,14 +21,13 @@ import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
 /**
  * Templates to build stores which will reload automatically and periodically.
  *
- * @param <Config> the class that reflects the structure of the yaml file.
- * @param <Item>   the class to store contents from parsing the yaml file.
+ * @param <Item> the class to store contents from parsing the underlying file.
  */
 @ThreadSafe
-public abstract class RearmStore<Config, Item> {
+public abstract class RearmStore<Item> {
 
   private final Path configPath;
-  private final Class<Config> configType;
+  private final IParser<Item> parser;
 
   private final AtomicReference<ListenableFuture<?>> started = new AtomicReference<>(null);
   private final AtomicReference<Instant> modifiedTimeHolder = new AtomicReference<>(null);
@@ -41,9 +37,9 @@ public abstract class RearmStore<Config, Item> {
   private Duration delay = Duration.ofSeconds(10);
   private final List<IListener<? super Item>> listeners = new LinkedList<>();
 
-  protected RearmStore(Path configPath, Class<Config> configType) {
+  protected RearmStore(Path configPath, IParser<Item> parser) {
     this.configPath = configPath;
-    this.configType = configType;
+    this.parser = parser;
   }
 
   /**
@@ -54,7 +50,7 @@ public abstract class RearmStore<Config, Item> {
    * @throws IllegalArgumentException if the input is not positive.
    * @throws RearmStoreAlreadyStartedException if the store has already started.
    */
-  public RearmStore<Config, Item> setInitialDelay(Duration initialDelay)
+  public RearmStore<Item> setInitialDelay(Duration initialDelay)
       throws IllegalArgumentException, RearmStoreAlreadyStartedException {
     if (delay.isNegative()) {
       throw new IllegalArgumentException(delay.toString());
@@ -77,7 +73,7 @@ public abstract class RearmStore<Config, Item> {
    * @throws IllegalArgumentException if the put is not positive.
    * @throws RearmStoreAlreadyStartedException if the store has already started.
    */
-  public RearmStore<Config, Item> setDelay(Duration delay)
+  public RearmStore<Item> setDelay(Duration delay)
       throws IllegalArgumentException, RearmStoreAlreadyStartedException {
     if (delay.isZero() || delay.isNegative()) {
       throw new IllegalArgumentException(delay.toString());
@@ -92,10 +88,8 @@ public abstract class RearmStore<Config, Item> {
     return this;
   }
 
-  /**
-   * Adds the given listener to {@link #listeners}.
-   */
-  public RearmStore<Config, Item> addListener(IListener<? super Item> listener) {
+  /** Adds the given listener to {@link #listeners}. */
+  public RearmStore<Item> addListener(IListener<? super Item> listener) {
     synchronized (listeners) {
       listeners.add(listener);
       Collections.sort(listeners);
@@ -103,10 +97,8 @@ public abstract class RearmStore<Config, Item> {
     return this;
   }
 
-  /**
-   * Removes the given listener from {@link #listeners}.
-   */
-  public RearmStore<Config, Item> removeListener(IListener<? super Item> listener) {
+  /** Removes the given listener from {@link #listeners}. */
+  public RearmStore<Item> removeListener(IListener<? super Item> listener) {
     synchronized (listeners) {
       listeners.remove(listener);
     }
@@ -163,15 +155,6 @@ public abstract class RearmStore<Config, Item> {
     }
   }
 
-  /**
-   * Parses the given yaml file and returns the parsing result.
-   *
-   * @param path the path of the yaml file.
-   * @param config the raw content of the yaml file. {@code null} if this file does not exist or is empty.
-   * @return the item from parsing the yaml file.
-   */
-  protected abstract Item parse(Path path, @Nullable Config config);
-
   private void checkAndReload() {
     synchronized (modifiedTimeHolder) {
       modifiedTimeHolder.updateAndGet(
@@ -199,14 +182,12 @@ public abstract class RearmStore<Config, Item> {
                 newItem =
                     itemHolder.updateAndGet(
                         oldValue -> {
-                          Config config;
-                          try (InputStream stream = Files.newInputStream(configPath)) {
-                            config = new Yaml().loadAs(stream, configType);
+                          try {
+                            return parser.parse(configPath);
                           } catch (IOException e) {
                             errorHolder.set(e);
                             return oldValue;
                           }
-                          return parse(configPath, config);
                         });
                 if (errorHolder.get() != null) {
                   onError(errorHolder.get());
@@ -235,9 +216,21 @@ public abstract class RearmStore<Config, Item> {
     }
   }
 
-  /**
-   * Listener which gets called when {@link RearmStore} has update.
-   */
+  /** Parser to read and parse content from a file. */
+  @ThreadSafe
+  public interface IParser<Item> {
+
+    /**
+     * Reads the file at the given path and parse its content.
+     *
+     * @param path the path of the file.
+     * @return the parsing result.
+     * @throws IOException if an I/O error occurs.
+     */
+    Item parse(Path path) throws IOException;
+  }
+
+  /** Listener which gets called when {@link RearmStore} has update. */
   @ThreadSafe
   public interface IListener<Item> extends Comparable<IListener<?>> {
 
@@ -251,10 +244,10 @@ public abstract class RearmStore<Config, Item> {
     /**
      * Called when the stored value has changed.
      *
-     * @param path         the path of the yaml file.
-     * @param newValue     the new value.
-     * @param oldValue     the old value.
-     * @param modifiedTime the modified time of the yaml file.
+     * @param path the path of the changed file.
+     * @param newValue the new value.
+     * @param oldValue the old value.
+     * @param modifiedTime the modified time of the file.
      */
     void onRearm(Path path, Item newValue, @Nullable Item oldValue, Instant modifiedTime);
 

@@ -9,11 +9,10 @@ import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
 @ThreadSafe
-public abstract class RearmBiMapStore<Config, Key, Value>
-    extends RearmStore<Config, ImmutableBiMap<Key, Value>> {
+public abstract class RearmBiMapStore<Key, Value> extends RearmStore<ImmutableBiMap<Key, Value>> {
 
-  protected RearmBiMapStore(Path configPath, Class<Config> configType) {
-    super(configPath, configType);
+  protected RearmBiMapStore(Path configPath, IParser<Key, Value> parser) {
+    super(configPath, parser);
   }
 
   public final Value get(Key key) throws NoSuchElementException {
@@ -39,10 +38,11 @@ public abstract class RearmBiMapStore<Config, Key, Value>
     return item == null ? ImmutableBiMap.of() : item;
   }
 
-  /**
-   * Listener which gets called when {@link RearmBiMapStore} has update.
-   */
+  /** Parser to read and parse {@link ImmutableBiMap} from a file. */
   @ThreadSafe
-  public interface IListener<Key, Value> extends RearmStore.IListener<ImmutableBiMap<Key, Value>> {
-  }
+  public interface IParser<Key, Value> extends RearmStore.IParser<ImmutableBiMap<Key, Value>> {}
+
+  /** Listener which gets called when {@link RearmBiMapStore} has update. */
+  @ThreadSafe
+  public interface IListener<Key, Value> extends RearmStore.IListener<ImmutableBiMap<Key, Value>> {}
 }

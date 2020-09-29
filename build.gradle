@@ -9,87 +9,91 @@ static def getRepositoryUrl(version) {
     return 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
 }
 
-apply plugin: 'java-library'
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
+subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
 
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation 'com.google.guava:guava:29.0-jre'
-    implementation 'org.yaml:snakeyaml:1.27'
-
-    compileOnly 'com.github.spotbugs:spotbugs-annotations:4.1.3'
-}
-
-group = 'io.contek.tinker'
-version = '1.0.1'
-
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allSource
-    archiveClassifier.set('sources')
-}
-
-task javadocJar(type: Jar) {
-    from javadoc
-    archiveClassifier.set('javadoc')
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifactId = 'rearm'
-            from components.java
-            artifact sourcesJar
-            artifact javadocJar
-
-            pom {
-                name = 'Tinker'
-                description = 'Templates to build RearmStores which will reload automatically and periodically.'
-                url = 'https://github.com/contek-io/io.contek.tinker'
-
-                scm {
-                    connection = 'scm:git:git://github.com/contek-io/io.contek.tinker.git'
-                    developerConnection = 'scm:git:ssh://github.com/contek-io/io.contek.tinker.git'
-                    url = 'http://github.com/contek-io/io.contek.tinker/tree/master'
-                }
-
-                licenses {
-                    license {
-                        name = 'The Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-
-                developers {
-                    developer {
-                        id = 'contek'
-                        name = 'Dev Contek'
-                        email = 'dev@contek.io'
-                        organization = 'Contek'
-                        organizationUrl = 'https://contek.io'
-                    }
-                }
-            }
-        }
-    }
     repositories {
-        maven {
-            url = getRepositoryUrl(version)
-            credentials {
-                username = project.hasProperty('ossrhUsername') ? ossrhUsername : ''
-                password = project.hasProperty('ossrhPassword') ? ossrhPassword : ''
+        mavenCentral()
+    }
+
+    dependencies {
+        implementation 'com.google.guava:guava:29.0-jre'
+
+        compileOnly 'com.github.spotbugs:spotbugs-annotations:4.1.3'
+    }
+
+    group = 'io.contek.tinker'
+    version = '1.1.0'
+
+    task sourcesJar(type: Jar) {
+        from sourceSets.main.allSource
+        archiveClassifier.set('sources')
+    }
+
+    task javadocJar(type: Jar) {
+        from javadoc
+        archiveClassifier.set('javadoc')
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                artifactId = project.name
+                from components.java
+                artifact sourcesJar
+                artifact javadocJar
+
+                pom {
+                    afterEvaluate {
+                        name = project.description
+                        description = project.description
+                    }
+                    
+                    url = 'https://github.com/contek-io/io.contek.tinker'
+
+                    scm {
+                        connection = 'scm:git:git://github.com/contek-io/io.contek.tinker.git'
+                        developerConnection = 'scm:git:ssh://github.com/contek-io/io.contek.tinker.git'
+                        url = 'http://github.com/contek-io/io.contek.tinker/tree/master'
+                    }
+
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = 'contek'
+                            name = 'Dev Contek'
+                            email = 'dev@contek.io'
+                            organization = 'Contek'
+                            organizationUrl = 'https://contek.io'
+                        }
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                url = getRepositoryUrl(version)
+                credentials {
+                    username = project.hasProperty('ossrhUsername') ? ossrhUsername : ''
+                    password = project.hasProperty('ossrhPassword') ? ossrhPassword : ''
+                }
             }
         }
     }
-}
 
-signing {
-    required { !isSnapshot(version) }
-    sign publishing.publications.mavenJava
+    signing {
+        required { !isSnapshot(version) }
+        sign publishing.publications.mavenJava
+    }
 }
