@@ -28,7 +28,7 @@ subprojects {
     }
 
     group = 'io.contek.tinker'
-    version = '1.1.0'
+    version = '2.0.0'
 
     task sourcesJar(type: Jar) {
         from sourceSets.main.allSource
@@ -53,7 +53,7 @@ subprojects {
                         name = project.description
                         description = project.description
                     }
-                    
+
                     url = 'https://github.com/contek-io/io.contek.tinker'
 
                     scm {
@@ -64,8 +64,8 @@ subprojects {
 
                     licenses {
                         license {
-                            name = 'The Apache License, Version 2.0'
-                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            name = 'MIT License'
+                            url = 'https://opensource.org/licenses/MIT'
                         }
                     }
 
