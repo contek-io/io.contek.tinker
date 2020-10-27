@@ -21,7 +21,7 @@ A Java library to automatically reload and cache configs.
     ``` java
      /**
       * Yaml file structure. Good practices:
-      * <li>Snake case
+      * <li>Snake cases
       * <li>Public field
       * <li>No constructor
       * <li>No method
@@ -38,8 +38,8 @@ A Java library to automatically reload and cache configs.
     ``` java
     /**
      * Parsed config file. Good practices:
-     * <li>Camel case (like normal java code)
-     * <li>Private Fields
+     * <li>Camel cases (like normal java code)
+     * <li>Private fields
      * <li>Strictly immutable
      * <li>Get methods only
      * <li>Use sophisticated classes (Enum, Instant, Duration etc)
@@ -128,6 +128,10 @@ A Java library to automatically reload and cache configs.
     ```
 5) Use the store
     ``` java
+   /**
+    * An example that uses ReamStoreExample. Good practices:
+    * <li>Handle null case properly 
+    */
     public class Example {
         private final ReamStoreExample store;
         private final BlockingQueue<Instant> queue;
