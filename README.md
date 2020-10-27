@@ -127,31 +127,31 @@ A Java library to automatically reload and cache configs.
     }
     ```
 5) Use the store
-``` java
-public class Example {
-    private final ReamStoreExample store;
-    private final BlockingQueue<Instant> queue;
+    ``` java
+    public class Example {
+        private final ReamStoreExample store;
+        private final BlockingQueue<Instant> queue;
+        
+        public Example(ReamStoreExample store, BlockingQueue<Instant> queue) {
+            this.store = store;
+            this.queue = queue;
+        }
     
-    public Example(ReamStoreExample store, BlockingQueue<Instant> queue) {
-        this.store = store;
-        this.queue = queue;
-    }
-
-    public void checkNextAgainstExpiry() throws InterruptedException {
-        Instant expiry = store.getExpiry();
-        if (expiry == null) {
-            System.out.println("No expiry information");
-            return;
-        }
-        Instant next = queue.take();
-        if (next.isBefore(expiry)) {
-            System.out.println(next + " is OK");
-        } else {
-            System.err.println(next + " is outdated");
+        public void checkNextAgainstExpiry() throws InterruptedException {
+            Instant expiry = store.getExpiry();
+            if (expiry == null) {
+                System.out.println("No expiry information");
+                return;
+            }
+            Instant next = queue.take();
+            if (next.isBefore(expiry)) {
+                System.out.println(next + " is OK");
+            } else {
+                System.err.println(next + " is outdated");
+            }
         }
     }
-}
-```
+    ```
 
 ## Additional templates
 This library also provides other types of store templates to help you with configs which use common data types:
