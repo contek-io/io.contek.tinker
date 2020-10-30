@@ -1,13 +1,13 @@
 package io.contek.tinker.rearm.yaml;
 
 import io.contek.tinker.rearm.RearmStore;
-import org.yaml.snakeyaml.Yaml;
-
-import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
+import org.yaml.snakeyaml.Yaml;
 
 @ThreadSafe
 public abstract class YamlParser<YamlType, Item> implements RearmStore.IParser<Item> {
@@ -23,5 +23,5 @@ public abstract class YamlParser<YamlType, Item> implements RearmStore.IParser<I
 
   protected abstract Class<YamlType> getYamlType();
 
-  protected abstract Item parse(YamlType yaml);
+  protected abstract Item parse(@Nullable YamlType yaml);
 }

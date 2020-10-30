@@ -1,9 +1,11 @@
 package io.contek.tinker.rearm;
 
-import com.google.common.util.concurrent.ListenableFuture;
+import static com.google.common.util.concurrent.MoreExecutors.listeningDecorator;
+import static java.nio.file.Files.getLastModifiedTime;
+import static java.nio.file.Files.isRegularFile;
+import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -12,11 +14,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-
-import static com.google.common.util.concurrent.MoreExecutors.listeningDecorator;
-import static java.nio.file.Files.getLastModifiedTime;
-import static java.nio.file.Files.isRegularFile;
-import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * Templates to build stores which will reload automatically and periodically.
@@ -88,7 +87,12 @@ public abstract class RearmStore<Item> {
     return this;
   }
 
-  /** Adds the given listener to {@link #listeners}. */
+  /**
+   * Adds the given listener to {@link #listeners}.
+   *
+   * @param listener the listener to add.
+   * @return {@code this}.
+   */
   public RearmStore<Item> addListener(IListener<? super Item> listener) {
     synchronized (listeners) {
       listeners.add(listener);
@@ -97,7 +101,12 @@ public abstract class RearmStore<Item> {
     return this;
   }
 
-  /** Removes the given listener from {@link #listeners}. */
+  /**
+   * Removes the given listener from {@link #listeners}.
+   *
+   * @param listener the listener to remove.
+   * @return {@code this}.
+   */
   public RearmStore<Item> removeListener(IListener<? super Item> listener) {
     synchronized (listeners) {
       listeners.remove(listener);
