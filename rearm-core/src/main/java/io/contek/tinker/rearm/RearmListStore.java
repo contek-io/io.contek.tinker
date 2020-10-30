@@ -1,13 +1,12 @@
 package io.contek.tinker.rearm;
 
 import com.google.common.collect.ImmutableList;
-
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
 public abstract class RearmListStore<Value> extends RearmStore<ImmutableList<Value>> {
@@ -35,7 +34,7 @@ public abstract class RearmListStore<Value> extends RearmStore<ImmutableList<Val
   }
 
   public final ImmutableList<Value> getList() {
-    ImmutableList<Value> item = getItem();
+    ImmutableList<Value> item = getParsedConfig();
     return item == null ? ImmutableList.of() : item;
   }
 

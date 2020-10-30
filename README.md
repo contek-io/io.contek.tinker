@@ -44,12 +44,12 @@ A Java library to automatically reload and cache configs.
      * <li>Get methods only
      * <li>Use sophisticated classes (Enum, Instant, Duration etc)
      */
-    public final class ParsedConfig {
+    public final class MyParsedConfig {
         private final int intValue;
         private final String stringValue;
         private final Duration durationValue;
         
-        public ParsedConfig(int intValue, String stringValue, Duration durationValue) {
+        public MyParsedConfig(int intValue, String stringValue, Duration durationValue) {
             this.intValue = intValue;
             this.stringValue = stringValue;
             this.durationValue = durationValue;
@@ -74,7 +74,7 @@ A Java library to automatically reload and cache configs.
      * Parser to create parsed config from Yaml file. Good practices:
      * <li>Stateless
      */
-    public final class Parser extends YamlParser<YamlFile, ParsedConfig> {
+    public final class Parser extends YamlParser<YamlFile, MyParsedConfig> {
     
         @Override
         protected Class<YamlFile> getYamlType() {
@@ -82,8 +82,8 @@ A Java library to automatically reload and cache configs.
         }
     
         @Override
-        protected ParsedConfig parse(YamlFile yaml) {
-            return new ParsedConfig(yaml.int_value, yaml.string_value, durationValue);
+        protected MyParsedConfig parse(YamlFile yaml) {
+            return new MyParsedConfig(yaml.int_value, yaml.string_value, durationValue);
         }
     }
     ```
@@ -95,8 +95,8 @@ A Java library to automatically reload and cache configs.
      * <li>Log on state change
      * <li>No set method
      */
-    public final class ReamStoreExample extends RearmStore<ParsedConfig>
-        implements RearmStore.IListener<ParsedConfig> {
+    public final class ReamStoreExample extends RearmStore<MyParsedConfig>
+        implements RearmStore.IListener<MyParsedConfig> {
     
         public ReamStoreExample(Path configPath) {
             super(configPath, new Parser());
@@ -106,7 +106,7 @@ A Java library to automatically reload and cache configs.
     
         @Nullable
         public Instant getExpiry() {
-            ParsedConfig config = getItem();
+            MyParsedConfig config = getParsedConfig();
             if (config == null) {
                 return null;
             }
@@ -120,7 +120,10 @@ A Java library to automatically reload and cache configs.
     
         @Override
         public void onRearm(
-                Path path, ParsedConfig newValue, @Nullable ParsedConfig oldValue, Instant modifiedTime) {
+                Path path,
+                MyParsedConfig newValue,
+                @Nullable MyParsedConfig oldValue,
+                Instant modifiedTime) {
             System.out.println("New int value is " + newValue.getIntValue());
             System.out.println("New string value is " + newValue.getStringValue());
         }

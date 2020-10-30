@@ -1,13 +1,12 @@
 package io.contek.tinker.rearm;
 
 import com.google.common.collect.ImmutableMap;
-
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
 public abstract class RearmMapStore<Key, Value> extends RearmStore<ImmutableMap<Key, Value>> {
@@ -35,7 +34,7 @@ public abstract class RearmMapStore<Key, Value> extends RearmStore<ImmutableMap<
   }
 
   public final ImmutableMap<Key, Value> getMap() {
-    ImmutableMap<Key, Value> item = getItem();
+    ImmutableMap<Key, Value> item = getParsedConfig();
     return item == null ? ImmutableMap.of() : item;
   }
 

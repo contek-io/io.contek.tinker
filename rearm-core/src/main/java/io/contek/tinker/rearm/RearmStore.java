@@ -20,23 +20,23 @@ import javax.annotation.concurrent.ThreadSafe;
 /**
  * Templates to build stores which will reload automatically and periodically.
  *
- * @param <Item> the class to store contents from parsing the underlying file.
+ * @param <ParsedConfig> the class to store contents from parsing the underlying file.
  */
 @ThreadSafe
-public abstract class RearmStore<Item> {
+public abstract class RearmStore<ParsedConfig> {
 
   private final Path configPath;
-  private final IParser<Item> parser;
+  private final IParser<ParsedConfig> parser;
 
   private final AtomicReference<ListenableFuture<?>> started = new AtomicReference<>(null);
   private final AtomicReference<Instant> modifiedTimeHolder = new AtomicReference<>(null);
-  private final AtomicReference<Item> itemHolder = new AtomicReference<>(null);
+  private final AtomicReference<ParsedConfig> holder = new AtomicReference<>(null);
 
   private Duration initialDelay = Duration.ZERO;
   private Duration delay = Duration.ofSeconds(10);
-  private final List<IListener<? super Item>> listeners = new LinkedList<>();
+  private final List<IListener<? super ParsedConfig>> listeners = new LinkedList<>();
 
-  protected RearmStore(Path configPath, IParser<Item> parser) {
+  protected RearmStore(Path configPath, IParser<ParsedConfig> parser) {
     this.configPath = configPath;
     this.parser = parser;
   }
@@ -49,7 +49,7 @@ public abstract class RearmStore<Item> {
    * @throws IllegalArgumentException if the input is not positive.
    * @throws RearmStoreAlreadyStartedException if the store has already started.
    */
-  public RearmStore<Item> setInitialDelay(Duration initialDelay)
+  public RearmStore<ParsedConfig> setInitialDelay(Duration initialDelay)
       throws IllegalArgumentException, RearmStoreAlreadyStartedException {
     if (delay.isNegative()) {
       throw new IllegalArgumentException(delay.toString());
@@ -72,7 +72,7 @@ public abstract class RearmStore<Item> {
    * @throws IllegalArgumentException if the put is not positive.
    * @throws RearmStoreAlreadyStartedException if the store has already started.
    */
-  public RearmStore<Item> setDelay(Duration delay)
+  public RearmStore<ParsedConfig> setDelay(Duration delay)
       throws IllegalArgumentException, RearmStoreAlreadyStartedException {
     if (delay.isZero() || delay.isNegative()) {
       throw new IllegalArgumentException(delay.toString());
@@ -93,7 +93,7 @@ public abstract class RearmStore<Item> {
    * @param listener the listener to add.
    * @return {@code this}.
    */
-  public RearmStore<Item> addListener(IListener<? super Item> listener) {
+  public RearmStore<ParsedConfig> addListener(IListener<? super ParsedConfig> listener) {
     synchronized (listeners) {
       listeners.add(listener);
       Collections.sort(listeners);
@@ -107,7 +107,7 @@ public abstract class RearmStore<Item> {
    * @param listener the listener to remove.
    * @return {@code this}.
    */
-  public RearmStore<Item> removeListener(IListener<? super Item> listener) {
+  public RearmStore<ParsedConfig> removeListener(IListener<? super ParsedConfig> listener) {
     synchronized (listeners) {
       listeners.remove(listener);
     }
@@ -153,14 +153,14 @@ public abstract class RearmStore<Item> {
    * @throws RearmStoreNotStartedException if the store is not started.
    */
   @Nullable
-  public final Item getItem() throws RearmStoreNotStartedException {
+  public final ParsedConfig getParsedConfig() throws RearmStoreNotStartedException {
     synchronized (started) {
       if (started.get() == null) {
         throw new RearmStoreNotStartedException();
       }
     }
-    synchronized (itemHolder) {
-      return itemHolder.get();
+    synchronized (holder) {
+      return holder.get();
     }
   }
 
@@ -183,13 +183,13 @@ public abstract class RearmStore<Item> {
               return oldModifiedTime;
             }
 
-            synchronized (itemHolder) {
-              Item oldItem = itemHolder.get();
-              Item newItem;
+            synchronized (holder) {
+              ParsedConfig oldConfig = holder.get();
+              ParsedConfig newConfig;
               AtomicReference<IOException> errorHolder = new AtomicReference<>(null);
               try {
-                newItem =
-                    itemHolder.updateAndGet(
+                newConfig =
+                    holder.updateAndGet(
                         oldValue -> {
                           try {
                             return parser.parse(configPath);
@@ -206,7 +206,7 @@ public abstract class RearmStore<Item> {
                 onError(t);
                 return oldModifiedTime;
               }
-              onRearm(newItem, oldItem, newModifiedTime);
+              onRearm(newConfig, oldConfig, newModifiedTime);
               return newModifiedTime;
             }
           });
@@ -219,15 +219,18 @@ public abstract class RearmStore<Item> {
     }
   }
 
-  private void onRearm(Item newValue, @Nullable Item oldValue, Instant modifiedTime) {
+  private void onRearm(
+      ParsedConfig newValue, @Nullable ParsedConfig oldValue, Instant modifiedTime) {
     synchronized (listeners) {
       listeners.forEach(l -> l.onRearm(configPath, newValue, oldValue, modifiedTime));
     }
   }
 
-  /** Parser to read and parse content from a file. */
+  /**
+   * Parser to read and parse content from a file.
+   */
   @ThreadSafe
-  public interface IParser<Item> {
+  public interface IParser<ParsedConfig> {
 
     /**
      * Reads the file at the given path and parse its content.
@@ -236,12 +239,14 @@ public abstract class RearmStore<Item> {
      * @return the parsing result.
      * @throws IOException if an I/O error occurs.
      */
-    Item parse(Path path) throws IOException;
+    ParsedConfig parse(Path path) throws IOException;
   }
 
-  /** Listener which gets called when {@link RearmStore} has update. */
+  /**
+   * Listener which gets called when {@link RearmStore} has update.
+   */
   @ThreadSafe
-  public interface IListener<Item> extends Comparable<IListener<?>> {
+  public interface IListener<ParsedConfig> extends Comparable<IListener<?>> {
 
     /**
      * Called when an error occurs.
@@ -258,7 +263,8 @@ public abstract class RearmStore<Item> {
      * @param oldValue the old value.
      * @param modifiedTime the modified time of the file.
      */
-    void onRearm(Path path, Item newValue, @Nullable Item oldValue, Instant modifiedTime);
+    void onRearm(
+        Path path, ParsedConfig newValue, @Nullable ParsedConfig oldValue, Instant modifiedTime);
 
     /**
      * The priority of this listener. A listener with lower value returned from this method will get

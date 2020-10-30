@@ -1,9 +1,8 @@
 package io.contek.tinker.rearm;
 
 import com.google.common.collect.ImmutableSet;
-
-import javax.annotation.concurrent.ThreadSafe;
 import java.nio.file.Path;
+import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
 public abstract class RearmSetStore<Value> extends RearmStore<ImmutableSet<Value>> {
@@ -13,7 +12,7 @@ public abstract class RearmSetStore<Value> extends RearmStore<ImmutableSet<Value
   }
 
   public final ImmutableSet<Value> getSet() {
-    ImmutableSet<Value> item = getItem();
+    ImmutableSet<Value> item = getParsedConfig();
     return item == null ? ImmutableSet.of() : item;
   }
 

@@ -2,12 +2,11 @@ package io.contek.tinker.rearm;
 
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Table;
-
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
 public abstract class RearmTableStore<RowKey, ColumnKey, Value>
@@ -37,7 +36,7 @@ public abstract class RearmTableStore<RowKey, ColumnKey, Value>
   }
 
   public final ImmutableTable<RowKey, ColumnKey, Value> getTable() {
-    ImmutableTable<RowKey, ColumnKey, Value> item = getItem();
+    ImmutableTable<RowKey, ColumnKey, Value> item = getParsedConfig();
     return item == null ? ImmutableTable.of() : item;
   }
 

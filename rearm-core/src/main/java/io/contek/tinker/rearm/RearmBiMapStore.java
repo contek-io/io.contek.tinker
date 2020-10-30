@@ -1,12 +1,11 @@
 package io.contek.tinker.rearm;
 
 import com.google.common.collect.ImmutableBiMap;
-
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
 public abstract class RearmBiMapStore<Key, Value> extends RearmStore<ImmutableBiMap<Key, Value>> {
@@ -34,7 +33,7 @@ public abstract class RearmBiMapStore<Key, Value> extends RearmStore<ImmutableBi
   }
 
   public final ImmutableBiMap<Key, Value> getMap() {
-    ImmutableBiMap<Key, Value> item = getItem();
+    ImmutableBiMap<Key, Value> item = getParsedConfig();
     return item == null ? ImmutableBiMap.of() : item;
   }
 

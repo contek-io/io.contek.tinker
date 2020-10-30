@@ -2,9 +2,8 @@ package io.contek.tinker.rearm;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMultimap;
-
-import javax.annotation.concurrent.ThreadSafe;
 import java.nio.file.Path;
+import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
 public abstract class RearmMultimapStore<Key, Value>
@@ -20,7 +19,7 @@ public abstract class RearmMultimapStore<Key, Value>
   }
 
   public final ImmutableMultimap<Key, Value> getMultimap() {
-    ImmutableMultimap<Key, Value> item = getItem();
+    ImmutableMultimap<Key, Value> item = getParsedConfig();
     return item == null ? ImmutableMultimap.of() : item;
   }
 
