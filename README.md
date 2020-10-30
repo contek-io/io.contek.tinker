@@ -6,13 +6,13 @@ A Java library to automatically reload and cache configs.
 <dependency>
     <groupId>io.contek.tinker</groupId>
     <artifactId>rearm-core</artifactId>
-    <version>2.0.2</version>
+    <version>2.0.3</version>
 </dependency>
 
 <dependency>
     <groupId>io.contek.invoker</groupId>
     <artifactId>rearm-yaml</artifactId>
-    <version>2.0.2</version>
+    <version>2.0.3</version>
 </dependency>
 ```
 
@@ -82,7 +82,7 @@ A Java library to automatically reload and cache configs.
         }
     
         @Override
-        protected MyParsedConfig parse(YamlFile yaml) {
+        protected MyParsedConfig parse(Path path, YamlFile yaml) {
             return new MyParsedConfig(yaml.int_value, yaml.string_value, durationValue);
         }
     }
