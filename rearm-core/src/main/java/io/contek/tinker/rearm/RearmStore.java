@@ -179,7 +179,7 @@ public abstract class RearmStore<ParsedConfig> {
               return oldModifiedTime;
             }
 
-            if (oldModifiedTime != null && !newModifiedTime.isAfter(oldModifiedTime)) {
+            if (newModifiedTime.equals(oldModifiedTime)) {
               return oldModifiedTime;
             }
 
