@@ -10,7 +10,7 @@ A Java library to automatically reload and cache configs.
 </dependency>
 
 <dependency>
-    <groupId>io.contek.invoker</groupId>
+    <groupId>io.contek.tinker</groupId>
     <artifactId>rearm-yaml</artifactId>
     <version>2.0.4</version>
 </dependency>
