@@ -100,8 +100,8 @@ A Java library to automatically reload and cache configs.
     
         public ReamStoreExample(Path configPath) {
             super(configPath, new Parser());
-             addListener(this);
-             start();
+            addListener(this);
+            start();
         }
     
         @Nullable
