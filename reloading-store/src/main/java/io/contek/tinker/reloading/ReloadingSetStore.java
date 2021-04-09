@@ -1,8 +1,9 @@
-package io.contek.tinker.rearm;
+package io.contek.tinker.reloading;
 
 import com.google.common.collect.ImmutableSet;
-import java.nio.file.Path;
+
 import javax.annotation.concurrent.ThreadSafe;
+import java.nio.file.Path;
 
 @ThreadSafe
 public abstract class ReloadingSetStore<Value> extends ReloadingStore<ImmutableSet<Value>> {

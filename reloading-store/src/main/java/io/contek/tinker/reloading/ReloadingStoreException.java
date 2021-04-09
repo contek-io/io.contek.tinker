@@ -1,4 +1,4 @@
-package io.contek.tinker.rearm;
+package io.contek.tinker.reloading;
 
 import javax.annotation.concurrent.Immutable;
 

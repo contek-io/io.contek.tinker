@@ -1,7 +1,7 @@
-package io.contek.tinker.rearm.yaml;
+package io.contek.tinker.reloading.yaml;
 
 import com.google.common.collect.ImmutableBiMap;
-import io.contek.tinker.rearm.ReloadingBiMapStore;
+import io.contek.tinker.reloading.ReloadingBiMapStore;
 
 import javax.annotation.concurrent.ThreadSafe;
 

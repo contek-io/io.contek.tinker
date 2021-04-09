@@ -1,7 +1,7 @@
-package io.contek.tinker.rearm.yaml;
+package io.contek.tinker.reloading.yaml;
 
 import com.google.common.collect.ImmutableTable;
-import io.contek.tinker.rearm.ReloadingTableStore;
+import io.contek.tinker.reloading.ReloadingTableStore;
 
 import javax.annotation.concurrent.ThreadSafe;
 

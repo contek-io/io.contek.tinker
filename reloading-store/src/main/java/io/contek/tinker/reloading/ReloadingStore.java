@@ -1,11 +1,9 @@
-package io.contek.tinker.rearm;
-
-import static com.google.common.util.concurrent.MoreExecutors.listeningDecorator;
-import static java.nio.file.Files.getLastModifiedTime;
-import static java.nio.file.Files.isRegularFile;
-import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
+package io.contek.tinker.reloading;
 
 import com.google.common.util.concurrent.ListenableFuture;
+
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -14,8 +12,11 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
+
+import static com.google.common.util.concurrent.MoreExecutors.listeningDecorator;
+import static java.nio.file.Files.getLastModifiedTime;
+import static java.nio.file.Files.isRegularFile;
+import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
 
 /**
  * Templates to build stores which will reload automatically and periodically.

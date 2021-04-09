@@ -1,7 +1,7 @@
-package io.contek.tinker.rearm.yaml;
+package io.contek.tinker.reloading.yaml;
 
 import com.google.common.collect.ImmutableList;
-import io.contek.tinker.rearm.ReloadingListStore;
+import io.contek.tinker.reloading.ReloadingListStore;
 
 import javax.annotation.concurrent.ThreadSafe;
 

@@ -1,11 +1,12 @@
-package io.contek.tinker.rearm;
+package io.contek.tinker.reloading;
 
 import com.google.common.collect.ImmutableBiMap;
+
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
 public abstract class ReloadingBiMapStore<Key, Value> extends ReloadingStore<ImmutableBiMap<Key, Value>> {

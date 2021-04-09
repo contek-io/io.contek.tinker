@@ -1,12 +1,13 @@
-package io.contek.tinker.rearm;
+package io.contek.tinker.reloading;
 
 import com.google.common.collect.ImmutableMap;
+
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
 public abstract class ReloadingMapStore<Key, Value> extends ReloadingStore<ImmutableMap<Key, Value>> {

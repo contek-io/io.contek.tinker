@@ -1,7 +1,7 @@
-package io.contek.tinker.rearm.yaml;
+package io.contek.tinker.reloading.yaml;
 
 import com.google.common.collect.ImmutableMultimap;
-import io.contek.tinker.rearm.ReloadingMultimapStore;
+import io.contek.tinker.reloading.ReloadingMultimapStore;
 
 import javax.annotation.concurrent.ThreadSafe;
 

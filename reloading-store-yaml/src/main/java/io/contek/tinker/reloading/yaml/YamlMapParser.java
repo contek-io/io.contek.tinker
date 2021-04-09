@@ -1,7 +1,7 @@
-package io.contek.tinker.rearm.yaml;
+package io.contek.tinker.reloading.yaml;
 
 import com.google.common.collect.ImmutableMap;
-import io.contek.tinker.rearm.ReloadingMapStore;
+import io.contek.tinker.reloading.ReloadingMapStore;
 
 import javax.annotation.concurrent.ThreadSafe;
 
