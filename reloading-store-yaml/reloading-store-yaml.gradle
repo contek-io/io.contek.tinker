@@ -1,0 +1,7 @@
+dependencies {
+    implementation project(':reloading-store')
+
+    implementation 'org.yaml:snakeyaml:1.27'
+}
+
+description = "Tinker Reloading Store Yaml"

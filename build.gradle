@@ -22,13 +22,13 @@ subprojects {
     }
 
     dependencies {
-        implementation 'com.google.guava:guava:30.0-jre'
+        implementation 'com.google.guava:guava:30.1-jre'
 
-        compileOnly 'com.github.spotbugs:spotbugs-annotations:4.1.4'
+        compileOnly 'com.github.spotbugs:spotbugs-annotations:4.2.0'
     }
 
     group = 'io.contek.tinker'
-    version = '2.0.4'
+    version = '2.1.0'
 
     task sourcesJar(type: Jar) {
         from sourceSets.main.allSource
@@ -43,7 +43,7 @@ subprojects {
     publishing {
         publications {
             mavenJava(MavenPublication) {
-                artifactId = project.name
+                artifactId = "tinker-${project.name}"
                 from components.java
                 artifact sourcesJar
                 artifact javadocJar

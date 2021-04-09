@@ -1,5 +1,5 @@
-include 'rearm-core'
-include 'rearm-yaml'
+include 'reloading-store'
+include 'reloading-store-yaml'
 
 rootProject.name = 'io.contek.tinker'
 rootProject.children.each { project ->
