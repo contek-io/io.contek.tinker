@@ -1,3 +1,4 @@
+include 'cli'
 include 'reloading-store'
 include 'reloading-store-yaml'
 

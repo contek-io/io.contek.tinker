@@ -9,10 +9,10 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
-public abstract class RearmTableStore<RowKey, ColumnKey, Value>
-    extends RearmStore<ImmutableTable<RowKey, ColumnKey, Value>> {
+public abstract class ReloadingTableStore<RowKey, ColumnKey, Value>
+    extends ReloadingStore<ImmutableTable<RowKey, ColumnKey, Value>> {
 
-  protected RearmTableStore(Path configPath, IParser<RowKey, ColumnKey, Value> parser) {
+  protected ReloadingTableStore(Path configPath, IParser<RowKey, ColumnKey, Value> parser) {
     super(configPath, parser);
   }
 
@@ -43,10 +43,10 @@ public abstract class RearmTableStore<RowKey, ColumnKey, Value>
   /** Parser to read and parse {@link ImmutableTable} from a file. */
   @ThreadSafe
   public interface IParser<RowKey, ColumnKey, Value>
-      extends RearmStore.IParser<ImmutableTable<RowKey, ColumnKey, Value>> {}
+      extends ReloadingStore.IParser<ImmutableTable<RowKey, ColumnKey, Value>> {}
 
   /** Listener which gets called when {@link ImmutableTable} has update. */
   @ThreadSafe
   public interface IListener<RowKey, ColumnKey, Value>
-      extends RearmStore.IListener<ImmutableTable<RowKey, ColumnKey, Value>> {}
+      extends ReloadingStore.IListener<ImmutableTable<RowKey, ColumnKey, Value>> {}
 }

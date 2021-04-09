@@ -1,6 +1,6 @@
 package io.contek.tinker.rearm.yaml;
 
-import io.contek.tinker.rearm.RearmStore;
+import io.contek.tinker.rearm.ReloadingStore;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -11,7 +11,7 @@ import org.yaml.snakeyaml.Yaml;
 
 @ThreadSafe
 public abstract class YamlParser<YamlType, ParsedConfig>
-    implements RearmStore.IParser<ParsedConfig> {
+    implements ReloadingStore.IParser<ParsedConfig> {
 
   @Override
   public final ParsedConfig parse(Path path) throws IOException {

@@ -9,9 +9,9 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
-public abstract class RearmListStore<Value> extends RearmStore<ImmutableList<Value>> {
+public abstract class ReloadingListStore<Value> extends ReloadingStore<ImmutableList<Value>> {
 
-  protected RearmListStore(Path configPath, IParser<Value> parser) {
+  protected ReloadingListStore(Path configPath, IParser<Value> parser) {
     super(configPath, parser);
   }
 
@@ -40,9 +40,9 @@ public abstract class RearmListStore<Value> extends RearmStore<ImmutableList<Val
 
   /** Parser to read and parse {@link ImmutableList} from a file. */
   @ThreadSafe
-  public interface IParser<Value> extends RearmStore.IParser<ImmutableList<Value>> {}
+  public interface IParser<Value> extends ReloadingStore.IParser<ImmutableList<Value>> {}
 
-  /** Listener which gets called when {@link RearmListStore} has update. */
+  /** Listener which gets called when {@link ReloadingListStore} has update. */
   @ThreadSafe
-  public interface IListener<Value> extends RearmStore.IListener<ImmutableList<Value>> {}
+  public interface IListener<Value> extends ReloadingStore.IListener<ImmutableList<Value>> {}
 }

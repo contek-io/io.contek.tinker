@@ -5,9 +5,9 @@ import java.nio.file.Path;
 import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
-public abstract class RearmSetStore<Value> extends RearmStore<ImmutableSet<Value>> {
+public abstract class ReloadingSetStore<Value> extends ReloadingStore<ImmutableSet<Value>> {
 
-  protected RearmSetStore(Path configPath, IParser<Value> parser) {
+  protected ReloadingSetStore(Path configPath, IParser<Value> parser) {
     super(configPath, parser);
   }
 
@@ -18,9 +18,9 @@ public abstract class RearmSetStore<Value> extends RearmStore<ImmutableSet<Value
 
   /** Parser to read and parse {@link ImmutableSet} from a file. */
   @ThreadSafe
-  public interface IParser<Value> extends RearmStore.IParser<ImmutableSet<Value>> {}
+  public interface IParser<Value> extends ReloadingStore.IParser<ImmutableSet<Value>> {}
 
-  /** Listener which gets called when {@link RearmSetStore} has update. */
+  /** Listener which gets called when {@link ReloadingSetStore} has update. */
   @ThreadSafe
-  public interface IListener<Value> extends RearmStore.IListener<ImmutableSet<Value>> {}
+  public interface IListener<Value> extends ReloadingStore.IListener<ImmutableSet<Value>> {}
 }

@@ -6,10 +6,10 @@ import java.nio.file.Path;
 import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
-public abstract class RearmMultimapStore<Key, Value>
-    extends RearmStore<ImmutableMultimap<Key, Value>> {
+public abstract class ReloadingMultimapStore<Key, Value>
+    extends ReloadingStore<ImmutableMultimap<Key, Value>> {
 
-  protected RearmMultimapStore(Path configPath, IParser<Key, Value> parser) {
+  protected ReloadingMultimapStore(Path configPath, IParser<Key, Value> parser) {
     super(configPath, parser);
   }
 
@@ -25,10 +25,10 @@ public abstract class RearmMultimapStore<Key, Value>
 
   /** Parser to read and parse {@link ImmutableMultimap} from a file. */
   @ThreadSafe
-  public interface IParser<Key, Value> extends RearmStore.IParser<ImmutableMultimap<Key, Value>> {}
+  public interface IParser<Key, Value> extends ReloadingStore.IParser<ImmutableMultimap<Key, Value>> {}
 
-  /** Listener which gets called when {@link RearmMultimapStore} has update. */
+  /** Listener which gets called when {@link ReloadingMultimapStore} has update. */
   @ThreadSafe
   public interface IListener<Key, Value>
-      extends RearmStore.IListener<ImmutableMultimap<Key, Value>> {}
+      extends ReloadingStore.IListener<ImmutableMultimap<Key, Value>> {}
 }

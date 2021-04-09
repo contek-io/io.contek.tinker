@@ -23,7 +23,7 @@ import javax.annotation.concurrent.ThreadSafe;
  * @param <ParsedConfig> the class to store contents from parsing the underlying file.
  */
 @ThreadSafe
-public abstract class RearmStore<ParsedConfig> {
+public abstract class ReloadingStore<ParsedConfig> {
 
   private final Path configPath;
   private final IParser<ParsedConfig> parser;
@@ -36,7 +36,7 @@ public abstract class RearmStore<ParsedConfig> {
   private Duration delay = Duration.ofSeconds(10);
   private final List<IListener<? super ParsedConfig>> listeners = new LinkedList<>();
 
-  protected RearmStore(Path configPath, IParser<ParsedConfig> parser) {
+  protected ReloadingStore(Path configPath, IParser<ParsedConfig> parser) {
     this.configPath = configPath;
     this.parser = parser;
   }
@@ -47,17 +47,17 @@ public abstract class RearmStore<ParsedConfig> {
    * @param initialDelay the delay before the first {@link #checkAndReload()} call.
    * @return this store.
    * @throws IllegalArgumentException if the input is not positive.
-   * @throws RearmStoreAlreadyStartedException if the store has already started.
+   * @throws ReloadingStoreAlreadyStartedException if the store has already started.
    */
-  public RearmStore<ParsedConfig> setInitialDelay(Duration initialDelay)
-      throws IllegalArgumentException, RearmStoreAlreadyStartedException {
+  public ReloadingStore<ParsedConfig> setInitialDelay(Duration initialDelay)
+      throws IllegalArgumentException, ReloadingStoreAlreadyStartedException {
     if (delay.isNegative()) {
       throw new IllegalArgumentException(delay.toString());
     }
 
     synchronized (started) {
       if (started.get() != null) {
-        throw new RearmStoreNotStartedException();
+        throw new ReloadingStoreNotStartedException();
       }
       this.initialDelay = initialDelay;
     }
@@ -70,17 +70,17 @@ public abstract class RearmStore<ParsedConfig> {
    * @param delay the interval between two consecutive {@link #checkAndReload()} calls.
    * @return this store.
    * @throws IllegalArgumentException if the put is not positive.
-   * @throws RearmStoreAlreadyStartedException if the store has already started.
+   * @throws ReloadingStoreAlreadyStartedException if the store has already started.
    */
-  public RearmStore<ParsedConfig> setDelay(Duration delay)
-      throws IllegalArgumentException, RearmStoreAlreadyStartedException {
+  public ReloadingStore<ParsedConfig> setDelay(Duration delay)
+      throws IllegalArgumentException, ReloadingStoreAlreadyStartedException {
     if (delay.isZero() || delay.isNegative()) {
       throw new IllegalArgumentException(delay.toString());
     }
 
     synchronized (started) {
       if (started.get() != null) {
-        throw new RearmStoreNotStartedException();
+        throw new ReloadingStoreNotStartedException();
       }
       this.delay = delay;
     }
@@ -93,7 +93,7 @@ public abstract class RearmStore<ParsedConfig> {
    * @param listener the listener to add.
    * @return {@code this}.
    */
-  public RearmStore<ParsedConfig> addListener(IListener<? super ParsedConfig> listener) {
+  public ReloadingStore<ParsedConfig> addListener(IListener<? super ParsedConfig> listener) {
     synchronized (listeners) {
       listeners.add(listener);
       Collections.sort(listeners);
@@ -107,7 +107,7 @@ public abstract class RearmStore<ParsedConfig> {
    * @param listener the listener to remove.
    * @return {@code this}.
    */
-  public RearmStore<ParsedConfig> removeListener(IListener<? super ParsedConfig> listener) {
+  public ReloadingStore<ParsedConfig> removeListener(IListener<? super ParsedConfig> listener) {
     synchronized (listeners) {
       listeners.remove(listener);
     }
@@ -118,14 +118,14 @@ public abstract class RearmStore<ParsedConfig> {
    * Starts this store, which will periodically parse the file at {@link #configPath} and store the
    * parsing result.
    *
-   * @throws RearmStoreAlreadyStartedException if this store has already started.
+   * @throws ReloadingStoreAlreadyStartedException if this store has already started.
    */
-  public final void start() throws RearmStoreAlreadyStartedException {
+  public final void start() throws ReloadingStoreAlreadyStartedException {
     synchronized (started) {
       started.updateAndGet(
           oldValue -> {
             if (oldValue != null && !oldValue.isDone()) {
-              throw new RearmStoreAlreadyStartedException();
+              throw new ReloadingStoreAlreadyStartedException();
             }
             return listeningDecorator(newSingleThreadScheduledExecutor())
                 .scheduleWithFixedDelay(this::checkAndReload, initialDelay, delay);
@@ -150,13 +150,13 @@ public abstract class RearmStore<ParsedConfig> {
    * Returns the latest stored value.
    *
    * @return the latest stored value. {@code null} if no value is stored.
-   * @throws RearmStoreNotStartedException if the store is not started.
+   * @throws ReloadingStoreNotStartedException if the store is not started.
    */
   @Nullable
-  public final ParsedConfig getParsedConfig() throws RearmStoreNotStartedException {
+  public final ParsedConfig getParsedConfig() throws ReloadingStoreNotStartedException {
     synchronized (started) {
       if (started.get() == null) {
-        throw new RearmStoreNotStartedException();
+        throw new ReloadingStoreNotStartedException();
       }
     }
     synchronized (holder) {
@@ -243,7 +243,7 @@ public abstract class RearmStore<ParsedConfig> {
   }
 
   /**
-   * Listener which gets called when {@link RearmStore} has update.
+   * Listener which gets called when {@link ReloadingStore} has update.
    */
   @ThreadSafe
   public interface IListener<ParsedConfig> extends Comparable<IListener<?>> {

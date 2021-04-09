@@ -8,9 +8,9 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
-public abstract class RearmBiMapStore<Key, Value> extends RearmStore<ImmutableBiMap<Key, Value>> {
+public abstract class ReloadingBiMapStore<Key, Value> extends ReloadingStore<ImmutableBiMap<Key, Value>> {
 
-  protected RearmBiMapStore(Path configPath, IParser<Key, Value> parser) {
+  protected ReloadingBiMapStore(Path configPath, IParser<Key, Value> parser) {
     super(configPath, parser);
   }
 
@@ -39,9 +39,9 @@ public abstract class RearmBiMapStore<Key, Value> extends RearmStore<ImmutableBi
 
   /** Parser to read and parse {@link ImmutableBiMap} from a file. */
   @ThreadSafe
-  public interface IParser<Key, Value> extends RearmStore.IParser<ImmutableBiMap<Key, Value>> {}
+  public interface IParser<Key, Value> extends ReloadingStore.IParser<ImmutableBiMap<Key, Value>> {}
 
-  /** Listener which gets called when {@link RearmBiMapStore} has update. */
+  /** Listener which gets called when {@link ReloadingBiMapStore} has update. */
   @ThreadSafe
-  public interface IListener<Key, Value> extends RearmStore.IListener<ImmutableBiMap<Key, Value>> {}
+  public interface IListener<Key, Value> extends ReloadingStore.IListener<ImmutableBiMap<Key, Value>> {}
 }

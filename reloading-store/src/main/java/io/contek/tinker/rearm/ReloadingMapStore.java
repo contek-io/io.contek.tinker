@@ -9,9 +9,9 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
-public abstract class RearmMapStore<Key, Value> extends RearmStore<ImmutableMap<Key, Value>> {
+public abstract class ReloadingMapStore<Key, Value> extends ReloadingStore<ImmutableMap<Key, Value>> {
 
-  protected RearmMapStore(Path configPath, IParser<Key, Value> parser) {
+  protected ReloadingMapStore(Path configPath, IParser<Key, Value> parser) {
     super(configPath, parser);
   }
 
@@ -40,9 +40,9 @@ public abstract class RearmMapStore<Key, Value> extends RearmStore<ImmutableMap<
 
   /** Parser to read and parse {@link ImmutableMap} from a file. */
   @ThreadSafe
-  public interface IParser<Key, Value> extends RearmStore.IParser<ImmutableMap<Key, Value>> {}
+  public interface IParser<Key, Value> extends ReloadingStore.IParser<ImmutableMap<Key, Value>> {}
 
-  /** Listener which gets called when {@link RearmMapStore} has update. */
+  /** Listener which gets called when {@link ReloadingMapStore} has update. */
   @ThreadSafe
-  public interface IListener<Key, Value> extends RearmStore.IListener<ImmutableMap<Key, Value>> {}
+  public interface IListener<Key, Value> extends ReloadingStore.IListener<ImmutableMap<Key, Value>> {}
 }
