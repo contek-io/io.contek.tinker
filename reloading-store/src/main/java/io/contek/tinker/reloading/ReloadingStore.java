@@ -207,7 +207,7 @@ public abstract class ReloadingStore<ParsedConfig> {
                 onError(t);
                 return oldModifiedTime;
               }
-              onRearm(newConfig, oldConfig, newModifiedTime);
+              onReload(newConfig, oldConfig, newModifiedTime);
               return newModifiedTime;
             }
           });
@@ -220,16 +220,14 @@ public abstract class ReloadingStore<ParsedConfig> {
     }
   }
 
-  private void onRearm(
+  private void onReload(
       ParsedConfig newValue, @Nullable ParsedConfig oldValue, Instant modifiedTime) {
     synchronized (listeners) {
-      listeners.forEach(l -> l.onRearm(configPath, newValue, oldValue, modifiedTime));
+      listeners.forEach(l -> l.onReload(configPath, newValue, oldValue, modifiedTime));
     }
   }
 
-  /**
-   * Parser to read and parse content from a file.
-   */
+  /** Parser to read and parse content from a file. */
   @ThreadSafe
   public interface IParser<ParsedConfig> {
 
@@ -243,9 +241,7 @@ public abstract class ReloadingStore<ParsedConfig> {
     ParsedConfig parse(Path path) throws IOException;
   }
 
-  /**
-   * Listener which gets called when {@link ReloadingStore} has update.
-   */
+  /** Listener which gets called when {@link ReloadingStore} has update. */
   @ThreadSafe
   public interface IListener<ParsedConfig> extends Comparable<IListener<?>> {
 
@@ -264,7 +260,7 @@ public abstract class ReloadingStore<ParsedConfig> {
      * @param oldValue the old value.
      * @param modifiedTime the modified time of the file.
      */
-    void onRearm(
+    void onReload(
         Path path, ParsedConfig newValue, @Nullable ParsedConfig oldValue, Instant modifiedTime);
 
     /**

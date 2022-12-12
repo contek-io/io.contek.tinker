@@ -26,11 +26,11 @@ public abstract class YamlParser<YamlType, ParsedConfig>
 
   @Override
   public final ParsedConfig parse(Path path) throws IOException {
-    YamlType yaml;
+    YamlType raw;
     try (InputStream input = Files.newInputStream(path)) {
-      yaml = new Yaml().loadAs(input, getYamlType());
+      raw = yaml.loadAs(input, getYamlType());
     }
-    return parse(path, yaml);
+    return parse(path, raw);
   }
 
   /**

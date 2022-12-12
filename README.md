@@ -1,22 +1,25 @@
 # io.contek.tinker
+
 A Java library to automatically reload and cache configs.
 
 ## Maven
+
 ``` xml
 <dependency>
     <groupId>io.contek.tinker</groupId>
-    <artifactId>rearm-core</artifactId>
-    <version>2.0.4</version>
+    <artifactId>tinker-reloading-store</artifactId>
+    <version>2.2.1</version>
 </dependency>
 
 <dependency>
     <groupId>io.contek.tinker</groupId>
-    <artifactId>rearm-yaml</artifactId>
-    <version>2.0.4</version>
+    <artifactId>tinker-reloading-store-yaml</artifactId>
+    <version>2.2.1</version>
 </dependency>
 ```
 
 ## Example
+
 1) Declare Yaml config file structure
     ``` java
      /**
@@ -95,8 +98,8 @@ A Java library to automatically reload and cache configs.
      * <li>Log on state change
      * <li>No set method
      */
-    public final class ReamStoreExample extends RearmStore<MyParsedConfig>
-        implements RearmStore.IListener<MyParsedConfig> {
+    public final class ReamStoreExample extends ReloadingStore<MyParsedConfig>
+        implements ReloadingStore.IListener<MyParsedConfig> {
     
         public ReamStoreExample(Path configPath) {
             super(configPath, new Parser());
@@ -119,7 +122,7 @@ A Java library to automatically reload and cache configs.
         }
     
         @Override
-        public void onRearm(
+        public void onReload(
                 Path path,
                 MyParsedConfig newValue,
                 @Nullable MyParsedConfig oldValue,
@@ -161,11 +164,13 @@ A Java library to automatically reload and cache configs.
     ```
 
 ## Additional templates
+
 This library also provides other types of store templates to help you with configs which use common data types:
-* `RearmBiMapStore` and `YamlBiMapParser`
-* `RearmListStore` and `YamlListParser`
-* `RearmMapStore` and `YamlMapParser`
-* `RearmMultimapStore` and `YamlMultimapParser`
-* `RearmSetStore` and `YamlSetParser`
-* `RearmTableStore` and `YamlTableParser`
+
+* `ReloadingBiMapStore` and `YamlBiMapParser`
+* `ReloadingListStore` and `YamlListParser`
+* `ReloadingMapStore` and `YamlMapParser`
+* `ReloadingMultimapStore` and `YamlMultimapParser`
+* `ReloadingSetStore` and `YamlSetParser`
+* `ReloadingTableStore` and `YamlTableParser`
 
