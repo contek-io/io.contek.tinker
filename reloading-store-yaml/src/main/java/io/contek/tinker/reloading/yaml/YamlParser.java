@@ -14,6 +14,16 @@ import java.nio.file.Path;
 public abstract class YamlParser<YamlType, ParsedConfig>
     implements ReloadingStore.IParser<ParsedConfig> {
 
+  private final Yaml yaml;
+
+  protected YamlParser() {
+    this(new Yaml());
+  }
+
+  protected YamlParser(Yaml yaml) {
+    this.yaml = yaml;
+  }
+
   @Override
   public final ParsedConfig parse(Path path) throws IOException {
     YamlType yaml;

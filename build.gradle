@@ -14,21 +14,21 @@ subprojects {
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
 
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
+    sourceCompatibility = '1.17'
+    targetCompatibility = '1.17'
 
     repositories {
         mavenCentral()
     }
 
     dependencies {
-        implementation 'com.google.guava:guava:30.1-jre'
+        implementation 'com.google.guava:guava:31.1-jre'
 
-        compileOnly 'com.github.spotbugs:spotbugs-annotations:4.2.0'
+        compileOnly 'com.github.spotbugs:spotbugs-annotations:4.7.3'
     }
 
     group = 'io.contek.tinker'
-    version = '2.1.0'
+    version = '2.2.0'
 
     task sourcesJar(type: Jar) {
         from sourceSets.main.allSource
@@ -37,6 +37,7 @@ subprojects {
 
     task javadocJar(type: Jar) {
         from javadoc
+        javadoc.options.addStringOption('Xdoclint:none', '-quiet')
         archiveClassifier.set('javadoc')
     }
 
@@ -85,8 +86,8 @@ subprojects {
             maven {
                 url = getRepositoryUrl(version)
                 credentials {
-                    username = project.hasProperty('ossrhUsername') ? ossrhUsername : ''
-                    password = project.hasProperty('ossrhPassword') ? ossrhPassword : ''
+                    username = project.hasProperty('sonatypeUsername') ? sonatypeUsername : ''
+                    password = project.hasProperty('sonatypePassword') ? sonatypePassword : ''
                 }
             }
         }
